@@ -36,9 +36,14 @@ class Set:
             # print("the number of ways in the register are: ",len(self.lru_register))
     def lru(self):   #HERE WHY ARE WE RETURNINFG THE VALUE OF THE FIRST WAY
         # ind=0
-        for i in range(len(self.lru_register)-1,0,-1):
+        # for i in range(len(self.lru_register)-1,0,-1):
+        for i in range(len(self.lru_register)):
             if(self.lru_register[i].validBit==0):
+                # if(self.lru_register[i].way_number>3):
+                #     print("The Way to be validated now is: ",self.lru_register[i].way_number)
                 return self.lru_register[i].way_number
+        # if(self.lru_register[0].way_number>3):
+        #     print("The Way to be evicted now is: ",self.lru_register[0].way_number)
         return self.lru_register[0].way_number
         # return self.lru_register[0]
         # return self.lru_register[0]
@@ -47,19 +52,20 @@ class Set:
     def tag_match(self, tag_str):
         for i in range(len(self.lru_register)):
             if(self.lru_register[i].tag==tag_str and self.lru_register[i].validBit==1):
-                # if(self.lru_register[i].way_number>3):
-                    # print("WHY IS THIS WAY_NUMBER NOT CHANGING: ",self.lru_register[i].way_number)
+                if(self.lru_register[i].way_number>3):
+                    print("Tag Match with the way number: ",self.lru_register[i].way_number)
                 return self.lru_register[i].way_number
                 return i+1   
-        # if(self.lru_register[i].way_number>3):
-        #     print("No Match : Tag Miss")
+        if(self.lru_register[i].way_number>3):
+            print("No Match : Tag Miss")
         return -1
 
     def change_lru(self, way_number):
         if(way_number==-1):
-            # if(self.lru_register[len(self.lru_register)-1].way_number>2):
                 # print("Before changing the lru: ",self.lru_register[len(self.lru_register)-1].way_number)
             self.lru_register = self.lru_register[1:] + self.lru_register[:1]
+            if(self.lru_register[len(self.lru_register)-1].way_number>3):
+                print("Latest accessed way: ",self.lru_register[len(self.lru_register)-1].way_number)
             # if(self.lru_register[len(self.lru_register)-1].way_number>2):
                 # print("After changing the lru: ",self.lru_register[len(self.lru_register)-1].way_number)
             return
@@ -70,12 +76,11 @@ class Set:
                     # print("Before changing the lru: ",self.lru_register[len(self.lru_register)-1].way_number)
                 self.lru_register.remove(self.lru_register[i])
                 self.lru_register.append(var)
-                # if(self.lru_register[len(self.lru_register)-1].way_number>2):
+                if(self.lru_register[len(self.lru_register)-1].way_number>2):
+                    print("Latest accessed way: ",self.lru_register[len(self.lru_register)-1].way_number)
                     # print("After changing the lru: ",self.lru_register[len(self.lru_register)-1].way_number)
                 return
         return
-        if way_number == -1:          # perform a left shift
-            self.lru_register = self.lru_register[1:] + self.lru_register[:1]
 
 
 def hex_to_bin(num, num_bits=32):     # converts a number to its binary representation
@@ -97,17 +102,25 @@ def cache_check(address):
     tag_match_with_way_number = memory[int(index, 2)].tag_match(tag)
     if tag_match_with_way_number > 0:
         number_of_hits += 1
+        if(tag_match_with_way_number>2):
+            print("HIT++")
         memory[int(index, 2)].change_lru(tag_match_with_way_number)
     else:
         lru_way = memory[int(index, 2)].lru()
-        for i in range(len(memory[int(index, 2)].lru_register)):
-            if(memory[int(index, 2)].lru_register[i].way_number==lru_way):
-                memory[int(index, 2)].lru_register[i].tag=tag
-                memory[int(index, 2)].lru_register[i].validBit=1
-                break
+        if(lru_way>2):
+            print("The lru to be usd on a miss is: ",lru_way)
+        if(lru_way!=-1):
+            for i in range(len(memory[int(index, 2)].lru_register)):
+                if(memory[int(index, 2)].lru_register[i].way_number==lru_way):
+                    memory[int(index, 2)].lru_register[i].tag=tag
+                    memory[int(index, 2)].lru_register[i].validBit=1
+                    break
+        else:
+            memory[int(index, 2)].lru_register[0].validBit=1
+            memory[int(index, 2)].lru_register[0].tag=tag
         # lru_way.validBit = 1
         # lru_way.tag = tag
-        memory[int(index, 2)].change_lru(-1)
+        memory[int(index, 2)].change_lru(lru_way)
         number_of_misses += 1
 
 
