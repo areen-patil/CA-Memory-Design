@@ -1,6 +1,6 @@
 import math
-import matplotlib
-import plotpy
+# import matplotlib
+import matplotlib.pyplot as plt
 class Cache:
     def __init__(self, size):  # size is in Kilobytes
         self.setAssociativeType = 4
@@ -23,13 +23,19 @@ class Ways:
 
 
 class Set:
-    def __init__(self, index):
+    def __init__(self, index,number_of_ways):
         self.index = index
+        self.l=[]
+        for i in range(number_of_ways):
+            self.l[i]=Ways()
         self.way1 = Ways()
         self.way2 = Ways()
         self.way3 = Ways()
         self.way4 = Ways()
-        self.lru_register = [self.way1, self.way2, self.way3, self.way4]
+        self.lru_register=[]
+        for i in range(number_of_ways):
+            self.lru_register.append(self.l[i])
+        # self.lru_register = [self.way1, self.way2, self.way3, self.way4]
 
     # returns the least recently used way
     def lru(self):
@@ -47,7 +53,7 @@ class Set:
             return 4
         else:
             return -1
-
+        
     def change_lru(self, way_number):
         if way_number == -1:          # perform a left shift
             self.lru_register = self.lru_register[1:] + self.lru_register[:1]
@@ -114,5 +120,12 @@ print("Number of hits : ", number_of_hits)
 print("Number of misses : ", number_of_misses)
 print("Miss rate : ", (number_of_misses*100)/(number_of_misses+number_of_hits))
 print("Miss/Hits : ", (number_of_hits/number_of_misses))
+x=[1,2,3,4,5]
+y=[5,4,3,2,1]
+plt.plot(x,y)
+plt.title("part a")
+plt.xlabel("something on the x-axis")
+plt.ylabel("hit rate")
+plt.show()
 
 
