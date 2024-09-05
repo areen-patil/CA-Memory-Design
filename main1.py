@@ -30,28 +30,48 @@ class Set:
             # print(type(self.lru_register[i].tag))
             self.lru_register[i].way_number=i+1
         # if(len(self.lru_register)>1):
+        # if(number_of_ways>3):
+        #     for i in range(len(self.lru_register)):
+        #         print(self.lru_register[i].way_number)
             # print("the number of ways in the register are: ",len(self.lru_register))
     def lru(self):   #HERE WHY ARE WE RETURNINFG THE VALUE OF THE FIRST WAY
-        # return self.lru_register[len(self.lru_register)-1]
-        return self.lru_register[0]
+        # ind=0
+        for i in range(len(self.lru_register)-1,0,-1):
+            if(self.lru_register[i].validBit==0):
+                return self.lru_register[i].way_number
+        return self.lru_register[0].way_number
+        # return self.lru_register[0]
+        # return self.lru_register[0]
 
     # returns 0 if tag matches otherwise -1
     def tag_match(self, tag_str):
         for i in range(len(self.lru_register)):
             if(self.lru_register[i].tag==tag_str and self.lru_register[i].validBit==1):
+                # if(self.lru_register[i].way_number>3):
+                    # print("WHY IS THIS WAY_NUMBER NOT CHANGING: ",self.lru_register[i].way_number)
                 return self.lru_register[i].way_number
                 return i+1   
+        # if(self.lru_register[i].way_number>3):
+        #     print("No Match : Tag Miss")
         return -1
 
     def change_lru(self, way_number):
         if(way_number==-1):
+            # if(self.lru_register[len(self.lru_register)-1].way_number>2):
+                # print("Before changing the lru: ",self.lru_register[len(self.lru_register)-1].way_number)
             self.lru_register = self.lru_register[1:] + self.lru_register[:1]
+            # if(self.lru_register[len(self.lru_register)-1].way_number>2):
+                # print("After changing the lru: ",self.lru_register[len(self.lru_register)-1].way_number)
             return
         for i in range(len(self.lru_register)):
             if(self.lru_register[i].way_number==way_number):
                 var=self.lru_register[i]
+                # if(self.lru_register[len(self.lru_register)-1].way_number>2):
+                    # print("Before changing the lru: ",self.lru_register[len(self.lru_register)-1].way_number)
                 self.lru_register.remove(self.lru_register[i])
                 self.lru_register.append(var)
+                # if(self.lru_register[len(self.lru_register)-1].way_number>2):
+                    # print("After changing the lru: ",self.lru_register[len(self.lru_register)-1].way_number)
                 return
         return
         if way_number == -1:          # perform a left shift
@@ -80,8 +100,13 @@ def cache_check(address):
         memory[int(index, 2)].change_lru(tag_match_with_way_number)
     else:
         lru_way = memory[int(index, 2)].lru()
-        lru_way.validBit = 1
-        lru_way.tag = tag
+        for i in range(len(memory[int(index, 2)].lru_register)):
+            if(memory[int(index, 2)].lru_register[i].way_number==lru_way):
+                memory[int(index, 2)].lru_register[i].tag=tag
+                memory[int(index, 2)].lru_register[i].validBit=1
+                break
+        # lru_way.validBit = 1
+        # lru_way.tag = tag
         memory[int(index, 2)].change_lru(-1)
         number_of_misses += 1
 
@@ -110,7 +135,7 @@ for i in list_of_ways:
 
     for line in range(file_size):
         cache_check(hex_to_bin(instruction_file[line][4:12], 32))  # give the 32-bit address to the cache
-        print(f' Percent Complete: {(line/file_size)*100}%', end='\r')
+        # print(f' Percent Complete: {(line/file_size)*100}%', end='\r')
 
     print("Number of hits : ", number_of_hits)
     hits.append(number_of_hits)
