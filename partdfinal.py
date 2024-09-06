@@ -128,14 +128,14 @@ list_of_ways=[1,2,4,8,16,32,64]
 miss=[]
 hits=[]
 # missrate=[]
-final_missrate=[]
+final_hitrate=[]
 # global number_of_hits
 number_of_hits=0
 # global number_of_misses
 number_of_misses=0
 file_names=["gcc.trace","gzip.trace","swim.trace","twolf.trace","mcf.trace"]
 for file_name in range(len(file_names)):
-    missrate=[]
+    hitrate=[]
     for i in list_of_ways:
         print("number of ways: ",i)
         cache = Cache(1024,i)  # size is in Kilobytes
@@ -158,37 +158,49 @@ for file_name in range(len(file_names)):
         # print("Number of misses : ", number_of_misses)
         miss.append(number_of_misses)
         # print("Hits rate : ", (number_of_misses*100)/(number_of_misses+number_of_hits))
-        missrate.append((number_of_misses*100)/(number_of_misses+number_of_hits))
-    final_missrate.append(missrate)
+        hitrate.append((number_of_hits*100)/(number_of_misses+number_of_hits))
+    final_hitrate.append(hitrate)
         # print("Miss/Hits : ", (number_of_hits/number_of_misses))
         # missrate.append((number_of_hits/number_of_misses))
 print(hits)
 print(miss)
-print(missrate)
-plt.plot(list_of_ways,final_missrate[0],label="gcc.trace",color="b",marker="o")
-plt.plot(list_of_ways,final_missrate[1],label="gzip.trace",color="r",marker="o")
-plt.plot(list_of_ways,final_missrate[2],label="swim.trace",color="g",marker="o")
-plt.plot(list_of_ways,final_missrate[3],label="twolf.trace",color="c",marker="o")
-plt.plot(list_of_ways,final_missrate[4],label="mcf.trace",color="m",marker="o")
-# for i in range(len(list_of_ways)):
-#     plt.annotate(f'',())
+print(hitrate)
+# Plotting the graphs with adjusted annotations
+plt.figure(figsize=(10, 6))
 
-# for i in range(len(final_missrate)):
-for j in range(len(list_of_ways)):
-    plt.annotate(f'{final_missrate[0][j]:.2f}', 
-                    (list_of_ways[j], final_missrate[0][j]), 
-                    textcoords="offset points", 
-                    xytext=(0,10), 
-                    ha='center')
-# plt.plot(list_of_ways,final_hitrate[0])
-# x.scale("log",base=2)
-plt.xticks(ticks=[1, 2, 4, 8, 16, 32, 64], labels=['1', '2', '4', '8', '16', '32', '64'])
-plt.yticks(ticks=[1,10,50,100], labels=['1', '10', '50', '100'])
-plt.title("This is the graph of hitrate vs associativity")
-plt.xlabel("associativity")
-plt.ylabel("hitrate")
-plt.xscale("log", base=2)
-plt.legend(loc="best",bbox_to_anchor=(1, 1),title="names")
-# x=list_of_ways  
-# plt.plot(x,hitrate)
+# Plot each trace with distinct color and marker
+colors = ["b", "r", "g", "c", "m"]
+labels = ["gcc.trace", "gzip.trace", "swim.trace", "twolf.trace", "mcf.trace"]
+
+
+# Loop through traces and plot
+plt.xticks(ticks=list_of_ways, labels=[str(x) for x in list_of_ways])
+plt.yticks(ticks=[0, 20, 40, 60,80,100], labels=['0', '20', '40','60','80', '100'])
+for i in range(len(final_hitrate)):
+    plt.plot(list_of_ways, final_hitrate[i], label=labels[i], color=colors[i], marker="o")
+    
+    # Annotate with dynamic offset to prevent overlapping annotations
+    for j in range(len(list_of_ways)):
+        xy = (list_of_ways[j], final_hitrate[i][j])
+        offset = (0, -10) if i == 0 else (0, 10)  # Alternate the offset to avoid overlap
+        plt.annotate(f'{final_hitrate[i][j]:.2f}', xy, textcoords="offset points", xytext=offset, ha='center')
+
+# Set logarithmic scale for the y-axis
+# plt.yscale('log')
+# plt.xscale('log')
+# Set custom ticks for better spacing and clarity
+
+# Add title and labels
+plt.title("Hit Rate vs Associativity")
+plt.xlabel("Associativity (Ways)")
+plt.ylabel("Hit Rate (%)")
+
+# Add a legend with an outside anchor for better visibility
+plt.legend(loc="best", bbox_to_anchor=(1, 1), title="Trace Files")
+
+# Enable grid for better readability
+plt.grid(True)
+
+# Show the plot
+plt.tight_layout()
 plt.show()
