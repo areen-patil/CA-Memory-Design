@@ -178,12 +178,14 @@ for i in range(len(final_missrate)):
                      xytext=(0,10), 
                      ha='center')
 # plt.plot(list_of_ways,final_hitrate[0])
+# x.scale("log",base=2)
 plt.xticks(ticks=[1, 2, 4, 8, 16, 32, 64], labels=['1', '2', '4', '8', '16', '32', '64'])
 plt.yticks(ticks=[1,10,50,100], labels=['1', '10', '50', '100'])
 plt.title("This is the graph of hitrate vs associativity")
 plt.xlabel("associativity")
 plt.ylabel("hitrate")
+plt.xscale("log", base=2)
 plt.legend(loc="best",bbox_to_anchor=(1, 1),title="names")
-x=list_of_ways  
+# x=list_of_ways  
 # plt.plot(x,hitrate)
 plt.show()
